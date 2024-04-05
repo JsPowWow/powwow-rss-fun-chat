@@ -1,0 +1,53 @@
+{
+  "compilerOptions": {
+    "target": "ES2016",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": true,
+    /* Bundler mode */
+    "allowJs": true,
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    /* Builds */
+    "baseUrl": "./",
+    "paths": {
+      "@/logger": [
+        "./app/packages/utils/Logger.ts"
+      ],
+      "@/utils": [
+        "./app/packages/utils/index.ts"
+      ],
+      "@/geometry": [
+        "./app/packages/geometry/index.ts"
+      ],
+      "@/components": [
+        "./app/packages/components/index.ts"
+      ],
+      "@/state-machine": [
+        "./app/packages/stateMachine/index.ts"
+      ],
+      "@/event-emitter": [
+        "./app/packages/eventEmitter/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "app",
+    "main.ts"
+  ]
+}
