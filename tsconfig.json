@@ -43,6 +43,21 @@
       ],
       "@/event-emitter": [
         "./app/packages/eventEmitter/index.ts"
+      ],
+      "@/pages": [
+        "./app/pages"
+      ],
+      "@/pages/*": [
+        "./app/pages/*"
+      ],
+      "@/shared": [
+        "./app/shared/index.ts"
+      ],
+      "@/api": [
+        "./app/api"
+      ],
+      "@/api/*": [
+        "./app/api/*"
       ]
     }
   },

@@ -1,6 +1,7 @@
+import { getLogger } from '@/utils';
+
 export const debug = {
   initialize: (): void => {
-    // const { sceneController = false } = options ?? {};
-    // RaceSceneController.logger.setEnabled(sceneController);
+    getLogger('AppPagesController').setEnabled(true);
   },
 };
