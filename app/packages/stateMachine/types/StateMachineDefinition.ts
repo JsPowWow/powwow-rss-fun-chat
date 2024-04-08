@@ -1,4 +1,6 @@
-export interface IStateMachineDefinition<State> {
+import type { Nullable } from '@/utils';
+
+export type IStateMachineDefinition<State, Action = State> = {
   initialState: State;
-  getNextState: (currentState: State, newState: State) => State;
-}
+  getNextState: (currentState: State, next: Action) => Nullable<State>;
+};

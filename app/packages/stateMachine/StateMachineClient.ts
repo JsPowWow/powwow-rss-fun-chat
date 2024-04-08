@@ -1,10 +1,15 @@
 import { EventEmitter } from '@/event-emitter';
-import type { ScopedLogger } from '@/utils';
-import { getLogger } from '@/utils';
+import type { ILogger, WithDebugOptions } from '@/utils';
 
-import type { IState } from './types/State.ts';
+import type { AnyState, IState } from './state/State.ts';
+import { ANY_STATES } from './state/State.ts';
 import type { IStateMachine, StateMachineEventListener } from './types/StateMachine.ts';
-import type { IStateMachineClient, StateMachineClientEventsMap, Unsubscribe } from './types/StateMachineClient.ts';
+import type {
+  IStateMachineClient,
+  StateMachineClientEventsMap,
+  TransitionState,
+  Unsubscribe,
+} from './types/StateMachineClient.ts';
 
 const compareStates = (stateA: unknown, stateB: unknown): boolean => {
   const sA = stateA && typeof stateA === 'object' && 'state' in stateA ? stateA.state : stateA;
@@ -12,24 +17,28 @@ const compareStates = (stateA: unknown, stateB: unknown): boolean => {
   return sA === sB;
 };
 
-export class StateMachineClient<State>
-  extends EventEmitter<StateMachineClientEventsMap<State>>
-  implements IStateMachineClient<State>
+const isAnyState = (state: unknown): state is AnyState => {
+  const s = state && typeof state === 'object' && 'state' in state ? state.state : state;
+  return ANY_STATES.some((a) => a === s);
+};
+
+export class StateMachineClient<State, Action = State>
+  extends EventEmitter<StateMachineClientEventsMap<State, Action>>
+  implements IStateMachineClient<State, Action>
 {
-  protected readonly logger: ScopedLogger; // TODO AR optional
+  protected readonly logger?: ILogger;
 
   protected readonly name: string;
 
-  private readonly stateMachine: IStateMachine<State>;
+  private readonly stateMachine: IStateMachine<State, Action>;
 
-  constructor(stateMachine: IStateMachine<State>, options?: { name?: string; debug?: boolean }) {
+  constructor(stateMachine: IStateMachine<State, Action>, options?: WithDebugOptions<{ name?: string }>) {
     super();
-    const { name = '', debug = false } = options ?? {};
+    const { name = '' } = options ?? {};
     this.name = name;
     this.stateMachine = stateMachine;
-    this.logger = getLogger(this.constructor.name);
-    if (debug) {
-      this.logger.setEnabled(true);
+    if (options?.debug) {
+      this.logger = options.logger;
     }
     this.stateMachine.on('stateChange', this.onStateMachineChangeHandler);
   }
@@ -39,11 +48,11 @@ export class StateMachineClient<State>
   }
 
   public onStateEnter<Data>(
-    enterState: State extends IState<Data> ? State['state'] : State,
-    callBack: StateMachineEventListener<'stateEnter', State>,
+    enterState: TransitionState<Data, State>,
+    callBack: StateMachineEventListener<'stateEnter', State, Action>,
   ): Unsubscribe {
     const onEnterStateImpl: typeof callBack = (event) => {
-      if (compareStates(event.to, enterState)) {
+      if (isAnyState(enterState) || compareStates(event.to, enterState)) {
         callBack(event);
       }
     };
@@ -55,7 +64,7 @@ export class StateMachineClient<State>
 
   public onStateLeave<Data>(
     leaveState: State extends IState<Data> ? State['state'] : State,
-    callBack: StateMachineEventListener<'stateLeave', State>,
+    callBack: StateMachineEventListener<'stateLeave', State, Action>,
   ): Unsubscribe {
     const onLeaveStateImpl: typeof callBack = (event) => {
       if (compareStates(event.from, leaveState)) {
@@ -69,12 +78,12 @@ export class StateMachineClient<State>
   }
 
   public onStateTransition<Data>(
-    from: State extends IState<Data> ? State['state'] : State,
-    to: State extends IState<Data> ? State['state'] : State,
-    callBack: StateMachineEventListener<'stateTransition', State>,
+    from: TransitionState<Data, State>,
+    to: TransitionState<Data, State>,
+    callBack: StateMachineEventListener<'stateTransition', State, Action>,
   ): Unsubscribe {
     const onTransitionImpl: typeof callBack = (event) => {
-      if (compareStates(event.from, from) && compareStates(event.to, to)) {
+      if ((isAnyState(from) || compareStates(event.from, from)) && (isAnyState(to) || compareStates(event.to, to))) {
         callBack(event);
       }
     };
@@ -84,25 +93,34 @@ export class StateMachineClient<State>
     };
   }
 
-  public onStateChange(callBack: StateMachineEventListener<'stateChange', State>): Unsubscribe {
+  public onStateChange(callBack: StateMachineEventListener<'stateChange', State, Action>): Unsubscribe {
     this.on('stateChange', callBack);
     return (): void => {
       this.off('stateChange', callBack);
     };
   }
 
-  protected onStateMachineChangeHandler: StateMachineEventListener<'stateChange', State> = ({ from, to }): void => {
-    this.emitTransitionListeners('stateLeave', from, to);
-    this.emitTransitionListeners('stateEnter', from, to);
-    this.emitTransitionListeners('stateTransition', from, to);
-    this.emitTransitionListeners('stateChange', from, to);
+  protected onStateMachineChangeHandler: StateMachineEventListener<'stateChange', State, Action> = ({
+    from,
+    to,
+    by,
+  }): void => {
+    this.emitTransitionListeners('stateLeave', from, to, by);
+    this.emitTransitionListeners('stateEnter', from, to, by);
+    this.emitTransitionListeners('stateTransition', from, to, by);
+    this.emitTransitionListeners('stateChange', from, to, by);
   };
 
-  private emitTransitionListeners(eventType: keyof StateMachineClientEventsMap<State>, from: State, to: State): void {
+  private emitTransitionListeners(
+    eventType: keyof StateMachineClientEventsMap<State, Action>,
+    from: State,
+    to: State,
+    by: Action,
+  ): void {
     try {
-      this.emit(eventType, { type: eventType, from, to });
+      this.emit(eventType, { type: eventType, from, to, by });
     } catch (e) {
-      this.logger.error(`${this.name}: Error occurred in listener on ${String(from)} -> ${String(to)}`, e);
+      this.logger?.error(`${this.name}: Error occurred in listener on ${String(from)} -> ${String(to)}`, e);
     }
   }
 

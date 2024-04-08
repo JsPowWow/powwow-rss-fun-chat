@@ -1,12 +1,12 @@
 import { Component, type ComponentCreateOptions } from '@/components';
-import type { Emitter, EventKey, EventListener } from '@/event-emitter';
+import type { EventKey, EventListener, IEventEmitter } from '@/event-emitter';
 import { EventEmitter } from '@/event-emitter';
 
 import classes from './RedSwitch.module.css';
 
 type RedSwitchEventsMap = { onChange: boolean };
 
-export class RedSwitch extends Component<'label'> implements Emitter<RedSwitchEventsMap> {
+export class RedSwitch extends Component<'label'> implements IEventEmitter<RedSwitchEventsMap> {
   private readonly button: Component<'div'>;
 
   public readonly input: Component<'input'>;

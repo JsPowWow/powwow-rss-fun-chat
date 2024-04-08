@@ -1,7 +1,14 @@
-import type { IState } from '../types/State.ts';
+export interface IState<Data, State extends string = string> {
+  readonly state: State;
+  readonly data: Data;
+  toString: () => string;
+}
+
+export const ANY_STATES = ['*', 'any'];
+export type AnyState = (typeof ANY_STATES)[number];
 
 export class State<Data, Name extends string> implements IState<Data, Name> {
-  private readonly stateName: Name;
+  public readonly state: Name;
 
   public readonly data: Data;
 
@@ -9,15 +16,11 @@ export class State<Data, Name extends string> implements IState<Data, Name> {
     if (!name || !name.trim()) {
       throw Error('Expect to have non-empty state name.');
     }
-    this.stateName = name;
+    this.state = name;
     this.data = data;
   }
 
-  public get state(): Name {
-    return this.stateName;
-  }
-
   public toString = (): string => {
-    return this.stateName;
+    return this.state;
   };
 }

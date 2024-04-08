@@ -25,11 +25,23 @@ const elementToComponentMap: WeakMap<
 export class Component<Tag extends HTMLElementTag> {
   /**
    * Sets styles on the provided component's HTML node.
-   * @param {HTMLElement} element - The component to set styles.
-   * @param {CSSStyleDeclaration} styles - The styles to set.
+   * @param {HTMLElement} element The component to set styles.
+   * @param {CSSStyleDeclaration} styles The styles to set.
    */
   public static setStyles(element: HTMLElement, styles: Partial<CSSStyleDeclaration>): void {
     Object.assign(element.style, { ...styles });
+  }
+
+  /**
+   * Sets properties on the provided component's HTML node.
+   * @param {HTMLElement} element The component to set properties.
+   * @param properties The properties key-value map to set.
+   */
+  public static setProps(
+    element: HTMLElement,
+    properties: Partial<{ [K in keyof HTMLElement]: HTMLElement[K] }>,
+  ): void {
+    Object.assign(element, { ...properties });
   }
 
   /**
@@ -196,6 +208,15 @@ export class Component<Tag extends HTMLElementTag> {
    */
   public setStyles(styles: Partial<CSSStyleDeclaration>): typeof this {
     Component.setStyles(this.nodeElement, styles);
+    return this;
+  }
+
+  /**
+   * Sets properties on the component's HTML node.
+   * @param props The props map to set.
+   */
+  public setProps(props: Partial<{ [K in keyof typeof this.nodeElement]: (typeof this.nodeElement)[K] }>): typeof this {
+    Component.setProps(this.nodeElement, props);
     return this;
   }
 

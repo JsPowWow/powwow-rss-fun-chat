@@ -1,4 +1,4 @@
-import type { AnyVoidFunction, ConstructorOf, Nil, Nullable } from './types';
+import type { ConstructorOf, Nil, Nullable } from './types';
 
 export function isNil<T>(value: Nullable<T>): value is Nil {
   return value === null || value === undefined;
@@ -8,9 +8,15 @@ export function isSome<T>(value: unknown): value is NonNullable<T> {
   return value !== null && value !== undefined;
 }
 
+export function isSomeFunction<Fn extends (...args: unknown[]) => unknown>(value: unknown): value is NonNullable<Fn> {
+  return isSome<Fn>(value) && typeof value === 'function';
+}
+
 export function assertIsNonNullable<T>(value: unknown, ...infos: Array<unknown>): asserts value is NonNullable<T> {
   if (value === undefined || value === null) {
-    throw new Error(`Nullish assertion Error: "${String(value)}"; ${infos?.join(' ')}`);
+    const messageText =
+      infos.length > 0 ? `${infos?.join(' ')}` : `Nullish assertion Error: "${String(value)}"; ${infos?.join(' ')}`;
+    throw new Error(messageText);
   }
 }
 
@@ -38,7 +44,7 @@ export const queryElement = <ElementType extends Element>(
   return result;
 };
 
-export const noop = (..._: unknown[]): void => {
+export const noop = (..._: unknown[]): undefined => {
   /** This is intentional */
 };
 
@@ -62,27 +68,27 @@ export const toShuffledArray = <T>(arr: Array<T>): Array<T> => {
   return result;
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export function debounce<T extends AnyVoidFunction>(func: T, wait: number, immediate?: boolean) {
-  let timeout: ReturnType<typeof setTimeout> | 0;
-  // eslint-disable-next-line func-names
-  return function <U>(this: U, ...args: Parameters<typeof func>): void {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const context = this;
-    if (timeout) {
-      clearTimeout(timeout);
-    }
-    if (immediate && !timeout) {
-      func.apply(context, args);
-    }
-    timeout = setTimeout(() => {
-      timeout = 0;
-      if (!immediate) {
-        func.apply(context, args);
-      }
-    }, wait);
-  };
-}
+// // eslint-disable-next-line @typescript-eslint/ban-types
+// export function debounce<T extends AnyVoidFunction>(func: T, wait: number, immediate?: boolean) {
+//   let timeout: ReturnType<typeof setTimeout> | 0;
+//   // eslint-disable-next-line func-names
+//   return function <U>(this: U, ...args: Parameters<typeof func>): void {
+//     // eslint-disable-next-line @typescript-eslint/no-this-alias
+//     const context = this;
+//     if (timeout) {
+//       clearTimeout(timeout);
+//     }
+//     if (immediate && !timeout) {
+//       func.apply(context, args);
+//     }
+//     timeout = setTimeout(() => {
+//       timeout = 0;
+//       if (!immediate) {
+//         func.apply(context, args);
+//       }
+//     }, wait);
+//   };
+// }
 
 export const randomInt = (min: number, max: number): number => {
   // min and max included
