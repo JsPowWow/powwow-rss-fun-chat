@@ -1,2 +1,5 @@
 container/files.js
 vite.config.ts
+vitest.config.ts
+jest.config.ts
+*.spec.ts

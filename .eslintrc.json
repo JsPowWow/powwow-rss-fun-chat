@@ -57,7 +57,7 @@
         // turn on/off "import/extensions" errors
         "import/extensions": "off",
         // turn on/off errors for missing imports
-        // "import/no-unresolved": "error",
+        "import/no-unresolved": "error",
         "import/no-cycle": "error",
         // 'import/no-named-as-default-member': 'off',
         "no-plusplus": "off",
@@ -92,7 +92,10 @@
             }
         ],
         "no-underscore-dangle": ["error", { "allowAfterThis": true }],
-        "no-param-reassign": ["error", { "props": false }]
+        "no-param-reassign": ["error", { "props": false }],
+        "@typescript-eslint/unbound-method": ["off", {
+            "ignoreStatic": true
+        }]
     },
     "overrides": [
         {

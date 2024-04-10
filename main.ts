@@ -12,7 +12,7 @@ assertIsInstanceOf(HTMLElement, app);
 window.addEventListener('load', () => {
   new AppPageStateController(app, {
     debug: true,
-    logger: getLogger('AppPagesController').setEnabled(true),
+    logger: getLogger('AppPagesController'),
   }).initialize();
 });
 

@@ -8,8 +8,89 @@
       "DOM",
       "DOM.Iterable"
     ],
+    "plugins": [
+      {
+        "name": "@unsplash/ts-namespace-import-plugin",
+        "namespaces": {
+          "A": {
+            "importPath": "fp-ts/Array"
+          },
+          "B": {
+            "importPath": "fp-ts/boolean"
+          },
+          "C": {
+            "importPath": "fp-ts/Console"
+          },
+          "D": {
+            "importPath": "fp-ts/Date"
+          },
+          "E": {
+            "importPath": "fp-ts/Either"
+          },
+          "IO": {
+            "importPath": "fp-ts/IO"
+          },
+          "IOE": {
+            "importPath": "fp-ts/IOEither"
+          },
+          "IOO": {
+            "importPath": "fp-ts/IOOption"
+          },
+          "J": {
+            "importPath": "fp-ts/Json"
+          },
+          "N": {
+            "importPath": "fp-ts/number"
+          },
+          "NEA": {
+            "importPath": "fp-ts/NonEmptyArray"
+          },
+          "O": {
+            "importPath": "fp-ts/Option"
+          },
+          "P": {
+            "importPath": "fp-ts/Predicate"
+          },
+          "R": {
+            "importPath": "fp-ts/Reader"
+          },
+          "RA": {
+            "importPath": "fp-ts/ReadonlyArray"
+          },
+          "RE": {
+            "importPath": "fp-ts/ReaderEither"
+          },
+          "RIO": {
+            "importPath": "fp-ts/ReaderIO"
+          },
+          "RNEA": {
+            "importPath": "fp-ts/ReadonlyNonEmptyArray"
+          },
+          "RT": {
+            "importPath": "fp-ts/ReaderTask"
+          },
+          "RTE": {
+            "importPath": "fp-ts/ReaderTaskEither"
+          },
+          "S": {
+            "importPath": "fp-ts/string"
+          },
+          "T": {
+            "importPath": "fp-ts/Task"
+          },
+          "TE": {
+            "importPath": "fp-ts/TaskEither"
+          },
+          "TO": {
+            "importPath": "fp-ts/TaskOption"
+          },
+          "TU": {
+            "importPath": "fp-ts/Tuple"
+          },
+        }
+      }
+    ],
     "skipLibCheck": true,
-    /* Bundler mode */
     "allowJs": true,
     "esModuleInterop": true,
     "moduleResolution": "bundler",
@@ -18,12 +99,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    /* Builds */
+    "types": ["vitest/globals"],
     "baseUrl": "./",
     "paths": {
       "@/logger": [
@@ -58,6 +138,9 @@
       ],
       "@/api/*": [
         "./app/api/*"
+      ],
+      "@/packages/*": [
+        "./app/packages/*"
       ]
     }
   },
