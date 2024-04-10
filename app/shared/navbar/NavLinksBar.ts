@@ -37,3 +37,22 @@ export class NavLinksBar extends Component<'nav'> {
     }
   };
 }
+
+// const navBar = new NavLinksBar(this.handleNavBarLinkClick);
+// this.root.appendChild(navBar.element);
+// navBar.render(Object.values(appRoutes).map((route) => ({ ...route })));
+// const { pathname } = window.location;
+// const { chatPage, loginPage, homePage, aboutPage } = appRoutes;
+
+// match(pathname)
+//   .with(homePage.pathName, flow(this.authorize, this.showChatPage))
+//   .with(loginPage.pathName, flow(this.authorize, this.showLoginPage))
+//   .with(aboutPage.pathName, flow(this.authorize, this.showAboutPage))
+//   .with(chatPage.pathName, flow(this.authorize, this.showChatPage))
+//   .otherwise(flow(this.authorize, this.showChatPage));
+// ...
+// ...
+// private handleNavBarLinkClick = (_pathName: string): void => {
+//   // pipe(getAppPagePath(`${pathName}`), fold(this.log(`The "${pathName}" path not found.`, 'warn'), this.navigate));
+// };
+//
