@@ -1,6 +1,7 @@
 import { P, match } from 'ts-pattern';
 
-import type { UserAuthData } from '@/api';
+import type { UserAuthData } from '@/api/auth.ts';
+import type { AppNoAuthRequirePath } from '@/pages/routing';
 import { AppPath } from '@/pages/routing';
 import type { IState, IStateMachineDefinition } from '@/state-machine';
 import { State } from '@/state-machine';
@@ -14,20 +15,26 @@ export type AppState =
   | IState<undefined, typeof AppPath.about>;
 
 export type AppStateChangeAction =
+  | { action: 'gotoPageSafe'; payload: AppNoAuthRequirePath }
   | { action: 'login'; payload: undefined }
-  | { action: 'authorize'; payload: UserAuthData }
-  | { action: 'logout'; payload: undefined }
-  | { action: 'showAbout'; payload: undefined };
+  | { action: 'authorized'; payload: UserAuthData };
+// | { action: 'logout'; payload: undefined };
+// | { action: 'showAbout'; payload: undefined };
 
 export const AppStateDefinition: IStateMachineDefinition<AppState, AppStateChangeAction> = {
   initialState: new State(AppPath.root, undefined),
-  getNextState: (current, action: AppStateChangeAction): Nullable<AppState> => {
-    return match([current.state, action])
+  getNextState: (current, action: AppStateChangeAction): Nullable<AppState> =>
+    match([current.state, action])
       .returnType<Nullable<AppState>>()
-      .with([AppPath.root, { action: 'login' }], ([_prev, { payload }]) => new State(AppPath.login, payload))
-      .with([AppPath.login, { action: 'authorize' }], ([_prev, { payload }]) => new State(AppPath.chat, payload))
-      .with([P.any, { action: 'logout' }], ([_prev, { payload }]) => new State(AppPath.root, payload))
-      .with([P.any, { action: 'showAbout' }], ([_prev, { payload }]) => new State(AppPath.about, payload))
-      .otherwise(noop);
-  },
+      .with([P.any, { action: 'gotoPageSafe' }], ([_prev, { payload }]) =>
+        match(payload)
+          .with('/about', () => new State(AppPath.about, undefined))
+          .with('/login', () => new State(AppPath.login, undefined))
+          .exhaustive(),
+      )
+      .with([P.any, { action: 'login' }], ([_prev, { payload }]) => new State(AppPath.login, payload))
+      // .with([P.any, { action: 'logout' }], ([_prev, { payload }]) => new State(AppPath.login, payload))
+      // .with([P.any, { action: 'showAbout' }], ([_prev, { payload }]) => new State(AppPath.about, payload))
+      .with([P.any, { action: 'authorized' }], ([_prev, { payload }]) => new State(AppPath.chat, payload))
+      .otherwise(noop),
 };
