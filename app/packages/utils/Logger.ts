@@ -8,7 +8,7 @@ export interface ILogger {
   info: (...args: AnyValue[]) => void;
   warn: (...args: AnyValue[]) => void;
   error: (...args: AnyValue[]) => void;
-  log: (message: string, logLevel?: 'info' | 'warn' | 'error') => (...args: AnyValue[]) => void;
+  log: (message: string, logLevel?: 'info' | 'warn' | 'error') => <A>(a: A) => A;
 }
 
 export type WithDebugOptions<T> =
@@ -77,20 +77,23 @@ class ConsoleLoggerScoped implements ScopedLogger {
 
   public log =
     (message: string, logLevel?: 'info' | 'warn' | 'error') =>
-    (...args: unknown[]): void => {
+    <A>(a: A): A => {
       if (isLoggerEnabled(this)) {
         switch (logLevel) {
           case 'info':
-            return this.info(message, ...args);
+            this.info(message, a);
+            break;
           case 'warn':
-            return this.warn(message, ...args);
+            this.warn(message, a);
+            break;
           case 'error':
-            return this.error(message, ...args);
+            this.error(message, a);
+            break;
           default:
-            return this.info(message, ...args);
+            this.info(message, a);
         }
       }
-      return undefined;
+      return a;
     };
 }
 

@@ -45,6 +45,16 @@ export class Component<Tag extends HTMLElementTag> {
   }
 
   /**
+   * Remove all childNodes of the provided HTML node.
+   * @param {HTMLElement} element The component to set properties.
+   */
+  public static removeAllChildren(element: HTMLElement): void {
+    element.childNodes.forEach((child) => {
+      element.removeChild(child);
+    });
+  }
+
+  /**
    * @description Returns a Component instance associated with provided Element or undefined.
    */
   public static findComponentOf<C extends Component<HTMLElementTag>>(element: ChildNode): C | undefined {
@@ -54,6 +64,11 @@ export class Component<Tag extends HTMLElementTag> {
     }
     return undefined;
   }
+
+  public static appendChild =
+    (parent: HTMLElement) =>
+    (c: Component<HTMLElementTag>): typeof c.element =>
+      parent.appendChild(c.element);
 
   /**
    * @description The HTML node element associated with the component.
