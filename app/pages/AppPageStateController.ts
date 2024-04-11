@@ -12,7 +12,6 @@ import { AboutPage } from '@/pages/about';
 import type { AppState, AppStateChangeAction } from '@/pages/AppStateDefinition.ts';
 import { AppStateDefinition } from '@/pages/AppStateDefinition.ts';
 import { ChatPage } from '@/pages/chat';
-import type { LoginOnSubmitCallback } from '@/pages/login';
 import { LoginPage } from '@/pages/login';
 import type { AppPagePath } from '@/pages/routing';
 import { AppPath, getAppPageSafePath, pushHistoryState } from '@/pages/routing';
@@ -88,7 +87,7 @@ export class AppPageStateController extends Loggable {
         pipe(
           {
             userName: pipe(credentials.getStoredUserName(), E.match(noop, identity)),
-            onSubmit: <LoginOnSubmitCallback>flow(
+            onSubmit: flow(
               validateUserInput,
               E.foldW(identity, (userData) => {
                 this.commitAuthorization(userData);

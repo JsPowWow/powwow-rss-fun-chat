@@ -3,7 +3,7 @@ import type { Nullable } from '@/utils';
 
 import classes from './LoginPage.module.css';
 
-export type OnSubmitErrors = Nullable<Record<'username' | 'userpwd', string>>;
+export type OnSubmitErrors = Nullable<Partial<Record<'username' | 'userpwd', string>> | Error>;
 
 export type LoginOnSubmitCallback = (userData: {
   username: FormDataEntryValue | null;
