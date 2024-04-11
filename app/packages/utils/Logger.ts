@@ -18,6 +18,8 @@ export type WithDebugOptions<T> =
     })
   | (T & { debug?: false });
 
+export type DebugOption = WithDebugOptions<NonNullable<object>>;
+
 export interface ScopedLogger extends ILogger {
   setEnabled: (value: boolean) => ScopedLogger;
   get scope(): string;

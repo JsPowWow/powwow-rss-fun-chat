@@ -5,8 +5,9 @@ import { match } from 'ts-pattern';
 
 import { credentials, validateUserInput } from '@/api/credentialsService.ts';
 import { Component } from '@/components';
+import { ChatModel } from '@/models/ChatModel.ts';
 import type { UserData } from '@/models/UserData.ts';
-import { Controller } from '@/packages/utils/Controller.ts';
+import { Loggable } from '@/packages/utils/Loggable.ts';
 import { AboutPage } from '@/pages/about';
 import type { AppState, AppStateChangeAction } from '@/pages/AppStateDefinition.ts';
 import { AppStateDefinition } from '@/pages/AppStateDefinition.ts';
@@ -16,17 +17,19 @@ import type { AppPagePath } from '@/pages/routing';
 import { AppPath, getAppPageSafePath, pushHistoryState } from '@/pages/routing';
 import type { IStateMachineClient } from '@/state-machine';
 import { Action, StateMachine, StateMachineClient } from '@/state-machine';
-import type { WithDebugOptions } from '@/utils';
+import type { DebugOption } from '@/utils';
 import { identity, noop } from '@/utils';
 
-export class AppPageStateController extends Controller {
+const chatUrl = import.meta.env.VITE_MIK_API_URL;
+
+export class AppPageStateController extends Loggable {
   private readonly root: HTMLElement;
 
   public readonly appStateClient: IStateMachineClient<AppState, AppStateChangeAction>;
 
   private readonly appState: StateMachine<AppState, AppStateChangeAction>;
 
-  constructor(root: HTMLElement, options?: WithDebugOptions<NonNullable<object>>) {
+  constructor(root: HTMLElement, options?: DebugOption) {
     super(options);
 
     this.root = root;
@@ -78,7 +81,7 @@ export class AppPageStateController extends Controller {
     const doLog = (path: string): (<A>(a: A) => A) => this.log(`mountPage: ${path}`, 'info');
     const attachPage = Component.appendChild(this.root);
     match(pathname)
-      .with(AppPath.chat, (path) => pipe(undefined, ChatPage.create, doLog(path), attachPage))
+      .with(AppPath.chat, (path) => pipe(new ChatModel(chatUrl), ChatPage.create, doLog(path), attachPage))
       .with(AppPath.about, (path) => pipe(undefined, AboutPage.create, doLog(path), attachPage))
       .with(AppPath.login, (path) =>
         pipe(
