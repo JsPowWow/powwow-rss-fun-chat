@@ -3,13 +3,18 @@ import type { Nullable } from '@/utils';
 
 import classes from './LoginPage.module.css';
 
+export type OnSubmitErrors = Nullable<Record<'username' | 'userpwd', string>>;
+
+export type LoginOnSubmitCallback = (userData: {
+  username: FormDataEntryValue | null;
+  password: FormDataEntryValue | null;
+}) => OnSubmitErrors;
+
 export type LoginPageProps = {
-  onSubmit?: (userData: {
-    username: FormDataEntryValue | null;
-    password: FormDataEntryValue | null;
-  }) => Nullable<Error>;
+  onSubmit?: LoginOnSubmitCallback;
   userName?: string;
 };
+
 export class LoginPage extends Component<'div'> {
   public static ID = 'login-page';
 
