@@ -1,16 +1,14 @@
-import * as E from 'fp-ts/Either';
-import { pipe } from 'fp-ts/function';
-
-import type { UserAuthData } from '@/api/auth.ts';
-import { validateUserInput } from '@/api/auth.ts';
 import { Component } from '@/components';
-import { noop } from '@/utils';
+import type { Nullable } from '@/utils';
 
 import classes from './LoginPage.module.css';
 
 export type LoginPageProps = {
-  onSubmit?: (userData: UserAuthData) => void;
-  initUserName?: string;
+  onSubmit?: (userData: {
+    username: FormDataEntryValue | null;
+    password: FormDataEntryValue | null;
+  }) => Nullable<Error>;
+  userName?: string;
 };
 export class LoginPage extends Component<'div'> {
   public static ID = 'login-page';
@@ -32,15 +30,11 @@ export class LoginPage extends Component<'div'> {
   private handleFormSubmit = (e: SubmitEvent): void => {
     e.preventDefault();
     const formData = new FormData(this.form.element, e.submitter);
-    // const text = formData.get('username');
 
-    pipe(
-      { username: formData.get('username'), password: formData.get('userpwd') },
-      validateUserInput,
-      E.fold(noop, (userData) => {
-        this.props?.onSubmit?.(userData);
-      }),
-    );
+    this.props?.onSubmit?.({
+      username: formData.get('username') ?? '',
+      password: formData.get('userpwd') ?? '',
+    });
   };
 
   private createForm(): Component<'form'> {
@@ -54,7 +48,7 @@ export class LoginPage extends Component<'div'> {
           type: 'text',
           required: true,
           name: 'username',
-          value: this.props?.initUserName ?? '',
+          value: this.props?.userName ?? '',
         }),
         new Component('span'),
         new Component('label').setTextContent('UserName'),

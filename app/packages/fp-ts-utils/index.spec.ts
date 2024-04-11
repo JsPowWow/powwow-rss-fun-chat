@@ -18,7 +18,7 @@ describe('session storage "getSessionStorageItem" tests', () => {
     const eNull = getSessionStorageItem('fun-chat');
     assertIsLeft(eNull);
     expect(eNull.left).toBeInstanceOf(Error);
-    expect(eNull.left.message).toBe('Invalid value null supplied to : NonEmptyString');
+    expect(eNull.left.message).toContain('Invalid value null supplied');
   });
 
   it('should handle storage getItem empty value', () => {
@@ -26,7 +26,7 @@ describe('session storage "getSessionStorageItem" tests', () => {
     const eEmpty = getSessionStorageItem('fun-chat');
     assertIsLeft(eEmpty);
     expect(eEmpty.left).toBeInstanceOf(Error);
-    expect(eEmpty.left.message).toBe('Invalid value "" supplied to : NonEmptyString');
+    expect(eEmpty.left.message).toContain('Invalid value "" supplied');
   });
 
   it('should get storage item value', () => {

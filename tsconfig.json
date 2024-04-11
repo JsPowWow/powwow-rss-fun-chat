@@ -141,6 +141,9 @@
       ],
       "@/packages/*": [
         "./app/packages/*"
+      ],
+      "@/models/*": [
+        "./app/models/*"
       ]
     }
   },

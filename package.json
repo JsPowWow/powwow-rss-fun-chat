@@ -6,12 +6,14 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
     "preview": "vite preview",
     "start:server": "node ./server/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint ./app",
-    "lint:fix": "eslint --fix ./app"
+    "lint:fix": "eslint --fix ./app",
+    "validate": "npm run type-check && npm run lint:fix && npm run test"
   },
   "dependencies": {
     "fp-ts": "^2.16.5",

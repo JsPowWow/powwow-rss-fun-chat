@@ -1,7 +1,7 @@
 import { P, match } from 'ts-pattern';
 
-import type { UserAuthData } from '@/api/auth.ts';
-import type { AppNoAuthRequirePath } from '@/pages/routing';
+import type { UserData } from '@/models/UserData.ts';
+import type { AppNoCredsRequiredPath } from '@/pages/routing';
 import { AppPath } from '@/pages/routing';
 import type { IState, IStateMachineDefinition } from '@/state-machine';
 import { State } from '@/state-machine';
@@ -11,22 +11,20 @@ import { noop } from '@/utils';
 export type AppState =
   | IState<undefined, typeof AppPath.root>
   | IState<undefined, typeof AppPath.login>
-  | IState<UserAuthData, typeof AppPath.chat>
+  | IState<UserData, typeof AppPath.chat>
   | IState<undefined, typeof AppPath.about>;
 
 export type AppStateChangeAction =
-  | { action: 'gotoPageSafe'; payload: AppNoAuthRequirePath }
+  | { action: 'gotoNoCredsPage'; payload: AppNoCredsRequiredPath }
   | { action: 'login'; payload: undefined }
-  | { action: 'authorized'; payload: UserAuthData };
-// | { action: 'logout'; payload: undefined };
-// | { action: 'showAbout'; payload: undefined };
+  | { action: 'authorized'; payload: UserData };
 
 export const AppStateDefinition: IStateMachineDefinition<AppState, AppStateChangeAction> = {
   initialState: new State(AppPath.root, undefined),
   getNextState: (current, action: AppStateChangeAction): Nullable<AppState> =>
     match([current.state, action])
       .returnType<Nullable<AppState>>()
-      .with([P.any, { action: 'gotoPageSafe' }], ([_prev, { payload }]) =>
+      .with([P.any, { action: 'gotoNoCredsPage' }], ([_prev, { payload }]) =>
         match(payload)
           .with('/about', () => new State(AppPath.about, undefined))
           .with('/login', () => new State(AppPath.login, undefined))

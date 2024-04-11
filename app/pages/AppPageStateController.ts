@@ -1,10 +1,11 @@
 import * as E from 'fp-ts/Either';
-import { pipe } from 'fp-ts/function';
+import { flow, pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import { match } from 'ts-pattern';
 
-import { type UserAuthData, getSavedUserName, getStoredAuthData, saveUserName, storeAuthData } from '@/api/auth.ts';
+import { credentials, validateUserInput } from '@/api/credentialsService.ts';
 import { Component } from '@/components';
+import type { UserData } from '@/models/UserData.ts';
 import { Controller } from '@/packages/utils/Controller.ts';
 import { AboutPage } from '@/pages/about';
 import type { AppState, AppStateChangeAction } from '@/pages/AppStateDefinition.ts';
@@ -44,7 +45,6 @@ export class AppPageStateController extends Controller {
   public initialize(): typeof this {
     this.registerStateChangeUpdates();
     this.registerBrowserBackAndForth();
-
     this.validateCurrentUrlPathName();
 
     return this;
@@ -53,10 +53,10 @@ export class AppPageStateController extends Controller {
   private validateCurrentUrlPathName = (): void => {
     const safeCanGoPath = getAppPageSafePath();
     if (O.isSome(safeCanGoPath)) {
-      this.appState.setState(new Action('gotoPageSafe', safeCanGoPath.value));
+      this.appState.setState(new Action('gotoNoCredsPage', safeCanGoPath.value));
     } else {
       pipe(
-        getStoredAuthData(),
+        credentials.getStoredUserData(),
         E.foldW(() => this.appState.setState(new Action('login', undefined)), this.commitAuthorization),
       );
     }
@@ -76,27 +76,33 @@ export class AppPageStateController extends Controller {
   private mountPage = (pathname: AppPagePath): void => {
     Component.removeAllChildren(this.root);
     const doLog = (path: string): (<A>(a: A) => A) => this.log(`mountPage: ${path}`, 'info');
-    const mount = Component.appendChild(this.root);
+    const attachPage = Component.appendChild(this.root);
     match(pathname)
-      .with(AppPath.chat, (path) => pipe(undefined, ChatPage.create, doLog(path), mount))
-      .with(AppPath.about, (path) => pipe(undefined, AboutPage.create, doLog(path), mount))
+      .with(AppPath.chat, (path) => pipe(undefined, ChatPage.create, doLog(path), attachPage))
+      .with(AppPath.about, (path) => pipe(undefined, AboutPage.create, doLog(path), attachPage))
       .with(AppPath.login, (path) =>
         pipe(
           {
-            initUserName: pipe(getSavedUserName(), E.match(noop, identity)),
-            onSubmit: this.commitAuthorization,
+            userName: pipe(credentials.getStoredUserName(), E.match(noop, identity)),
+            onSubmit: flow(
+              validateUserInput,
+              E.foldW(identity, (userData) => {
+                this.commitAuthorization(userData);
+                return undefined;
+              }),
+            ),
           },
           LoginPage.create,
           doLog(path),
-          mount,
+          attachPage,
         ),
       )
       .run();
   };
 
-  private commitAuthorization = (userData: UserAuthData): void => {
+  private commitAuthorization = (userData: UserData): void => {
     this.appState.setState(new Action('authorized', userData));
-    saveUserName(userData.username);
-    storeAuthData(userData);
+    credentials.storeUserName(userData.username);
+    credentials.storeUserData(userData);
   };
 }
