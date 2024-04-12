@@ -1,4 +1,4 @@
-import { isSomeFunction } from '@/utils';
+import { isSome } from '@/utils';
 
 export type EventMap = Record<string, unknown>;
 export type EventKey<Events extends EventMap> = string & keyof Events;
@@ -8,6 +8,10 @@ export interface IEventEmitter<Events extends EventMap> {
   on: <Event extends EventKey<Events>>(eventName: Event, fn: EventListener<Events[Event]>) => void;
   off: <Event extends EventKey<Events>>(eventName: Event, fn: EventListener<Events[Event]>) => void;
   emit: <Event extends EventKey<Events>>(eventName: Event, params: Events[Event]) => void;
+}
+
+function isSomeFunction<Fn extends (...args: unknown[]) => unknown>(value: unknown): value is NonNullable<Fn> {
+  return isSome<Fn>(value) && typeof value === 'function';
 }
 
 export class EventEmitter<T extends EventMap> implements IEventEmitter<T> {
