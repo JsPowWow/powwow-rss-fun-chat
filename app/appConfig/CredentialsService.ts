@@ -4,11 +4,11 @@ import { pipe } from 'fp-ts/function';
 
 import type { UserData } from '@/api/webStorageCredentialsService.ts';
 import { UserDataSchema, webStorageCredentials as credentials } from '@/api/webStorageCredentialsService.ts';
-import type { ICredentialsService, IUserData } from '@/appConfig/types.ts';
+import type { IAppCredentialsService, IUserData } from '@/appConfig/types.ts';
 import { toOneError } from '@/packages/fp-ts-utils';
 import { Loggable } from '@/utils';
 
-export class CredentialsService extends Loggable implements ICredentialsService {
+export class CredentialsService extends Loggable implements IAppCredentialsService {
   /* eslint class-methods-use-this: ["error", { "exceptMethods": ["validate", "getUserData", "getUserName", "saveUserData", "saveUserName"] }] */
 
   public validate = (input: unknown): E.Either<Error, { isValid: true } & IUserData> =>

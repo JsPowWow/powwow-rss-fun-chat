@@ -28,6 +28,7 @@ const getStoredWebSocket = (url: string): IO<O.Option<PendingWebSocket>> => {
     return O.fromNullable(WEB_SOCKETS.get(url));
   };
 };
+
 const storeNewWebSocket = (
   url: string,
   ws: E.Either<ConnectionError, WebSocket>,

@@ -1,6 +1,6 @@
 import type * as E from 'fp-ts/Either';
 
-import type { AppState, AppStateChangeAction } from '@/appConfig/AppStateDefinition.ts';
+import type { AppRouteState, RouteStateChangeAction } from '@/appConfig/AppRouteStateDefinitions.ts';
 import type { AppPagePath } from '@/pages/routing';
 import type { IStateMachine, IStateMachineClient } from '@/state-machine';
 
@@ -9,21 +9,21 @@ export interface IUserData {
   password: string;
 }
 
-export interface IAppStateMachine extends IStateMachine<AppState, AppStateChangeAction> {}
+export interface IAppRouteStateMachine extends IStateMachine<AppRouteState, RouteStateChangeAction> {}
 
-export interface IAppStateClient extends IStateMachineClient<AppState, AppStateChangeAction> {}
+export interface IAppRouteStateClient extends IStateMachineClient<AppRouteState, RouteStateChangeAction> {}
 
 export interface IAppPageManager {
   initialize: () => IAppPageManager;
   mountPage: (pathname: AppPagePath) => void;
 }
 
-export interface IAppPageStateController {
-  initialize: () => IAppPageStateController;
-  dispatch: (action: AppStateChangeAction) => AppState;
+export interface IAppRouteStateController {
+  initialize: () => IAppRouteStateController;
+  dispatch: (action: RouteStateChangeAction) => AppRouteState;
 }
 
-export interface ICredentialsService {
+export interface IAppCredentialsService {
   validate: (input: unknown) => E.Either<Error, { isValid: true } & IUserData>;
   saveUserData: (userData: IUserData) => E.Either<Error, void>;
   getUserData: () => E.Either<Error, IUserData>;

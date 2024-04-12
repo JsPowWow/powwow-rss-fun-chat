@@ -3,36 +3,36 @@ import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 
 import type {
-  IAppPageStateController,
-  IAppStateClient,
-  IAppStateMachine,
-  ICredentialsService,
+  IAppCredentialsService,
+  IAppRouteStateClient,
+  IAppRouteStateController,
+  IAppRouteStateMachine,
 } from '@/appConfig/types.ts';
 import { Loggable } from '@/packages/utils/Loggable.ts';
 import { getAppPageSafePath, pushHistoryState } from '@/pages/routing';
 import { Action } from '@/state-machine';
 import type { WithDebugOptions } from '@/utils';
 
-import type { AppState, AppStateChangeAction } from './AppStateDefinition.ts';
+import type { AppRouteState, RouteStateChangeAction } from './AppRouteStateDefinitions.ts';
 
-export class AppPageStateController extends Loggable implements IAppPageStateController {
-  public readonly appStateClient: IAppStateClient;
+export class AppRouteStateController extends Loggable implements IAppRouteStateController {
+  public readonly routeStateClient: IAppRouteStateClient;
 
-  private readonly appState: IAppStateMachine;
+  private readonly routeState: IAppRouteStateMachine;
 
-  private readonly credentialsService: ICredentialsService;
+  private readonly credentialsService: IAppCredentialsService;
 
   constructor(
     options: WithDebugOptions<{
-      appState: IAppStateMachine;
-      appStateClient: IAppStateClient;
-      credentialsService: ICredentialsService;
+      routeState: IAppRouteStateMachine;
+      routeStateClient: IAppRouteStateClient;
+      credentialsService: IAppCredentialsService;
     }>,
   ) {
     super(options);
 
-    this.appState = options.appState;
-    this.appStateClient = options.appStateClient;
+    this.routeState = options.routeState;
+    this.routeStateClient = options.routeStateClient;
     this.credentialsService = options.credentialsService;
   }
 
@@ -44,8 +44,8 @@ export class AppPageStateController extends Loggable implements IAppPageStateCon
     return this;
   }
 
-  public dispatch = (action: AppStateChangeAction): AppState => {
-    return this.appState.setState(action);
+  public dispatch = (action: RouteStateChangeAction): AppRouteState => {
+    return this.routeState.setState(action);
   };
 
   private validateCurrentUrlPathName = (): void => {
@@ -64,10 +64,10 @@ export class AppPageStateController extends Loggable implements IAppPageStateCon
   };
 
   private registerStateChangeUpdates = (): void => {
-    this.appStateClient.onStateEnter('any', (e) => {
+    this.routeStateClient.onStateEnter('any', (e) => {
       pushHistoryState(e.to.state);
     });
-    this.appStateClient.onStateLeave('/login', (e) => {
+    this.routeStateClient.onStateLeave('/login', (e) => {
       if (e.by.action === 'authorized' && e.to.state === '/chat') {
         const userData = e.to.data;
         this.credentialsService.saveUserName(userData.username);

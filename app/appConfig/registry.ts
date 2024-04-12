@@ -1,31 +1,31 @@
 import { CredentialsService } from '@/appConfig/CredentialsService.ts';
 import type {
+  IAppCredentialsService,
   IAppPageManager,
-  IAppPageStateController,
-  IAppStateClient,
-  IAppStateMachine,
-  ICredentialsService,
+  IAppRouteStateClient,
+  IAppRouteStateController,
+  IAppRouteStateMachine,
 } from '@/appConfig/types.ts';
 import { StateMachine, StateMachineClient } from '@/state-machine';
 import { getLogger } from '@/utils';
 
 import { AppPageManager } from './AppPageManager.ts';
-import { AppPageStateController } from './AppPageStateController.ts';
-import type { AppState, AppStateChangeAction } from './AppStateDefinition.ts';
-import { AppStateDefinition } from './AppStateDefinition.ts';
+import { AppRouteStateController } from './AppRouteStateController.ts';
+import type { AppRouteState, RouteStateChangeAction } from './AppRouteStateDefinitions.ts';
+import { AppRouteStateDefinitions } from './AppRouteStateDefinitions.ts';
 
 const appElementRootNode: HTMLElement = document.querySelector('#app') ?? document.body;
 
 export class Registry {
-  public static AppState: { name: 'AppState'; instance: IAppStateMachine };
+  public static AppState: { name: 'AppState'; instance: IAppRouteStateMachine };
 
-  public static AppStateClient: { name: 'AppStateClient'; instance: IAppStateClient };
+  public static AppStateClient: { name: 'AppStateClient'; instance: IAppRouteStateClient };
 
-  public static AppPageStateController: { name: 'AppPageStateController'; instance: IAppPageStateController };
+  public static AppRouteStateController: { name: 'AppRouteStateController'; instance: IAppRouteStateController };
 
   public static AppPageManager: { name: 'AppPageManager'; instance: IAppPageManager };
 
-  public static CredentialsService: { name: 'CredentialsService'; instance: ICredentialsService };
+  public static CredentialsService: { name: 'CredentialsService'; instance: IAppCredentialsService };
 
   public static SocketService: { name: 'SocketService' };
 
@@ -34,14 +34,14 @@ export class Registry {
   static {
     this.AppState = {
       name: 'AppState',
-      instance: new StateMachine<AppState, AppStateChangeAction>({
+      instance: new StateMachine<AppRouteState, RouteStateChangeAction>({
         name: 'AppState',
-        definition: AppStateDefinition,
+        definition: AppRouteStateDefinitions,
         debug: true,
         logger: getLogger('AppState'),
       }),
     };
-    // TODO check types here / why need IStateMachine ?
+
     this.AppStateClient = {
       name: 'AppStateClient',
       instance: new StateMachineClient(this.AppState.instance, {
@@ -58,14 +58,14 @@ export class Registry {
       }),
     };
 
-    this.AppPageStateController = {
-      name: 'AppPageStateController',
-      instance: new AppPageStateController({
-        appState: this.AppState.instance,
-        appStateClient: this.AppStateClient.instance,
+    this.AppRouteStateController = {
+      name: 'AppRouteStateController',
+      instance: new AppRouteStateController({
+        routeState: this.AppState.instance,
+        routeStateClient: this.AppStateClient.instance,
         credentialsService: this.CredentialsService.instance,
         debug: true,
-        logger: getLogger('AppPageStateController'),
+        logger: getLogger('AppRouteStateController'),
       }).initialize(),
     };
 
@@ -73,8 +73,8 @@ export class Registry {
       name: 'AppPageManager',
       instance: new AppPageManager({
         rootNode: appElementRootNode,
-        appStateClient: this.AppStateClient.instance,
-        appPageStateController: this.AppPageStateController.instance,
+        routeStateClient: this.AppStateClient.instance,
+        routeStateController: this.AppRouteStateController.instance,
         credentialsService: this.CredentialsService.instance,
         debug: true,
         logger: getLogger('AppPageManager'),
