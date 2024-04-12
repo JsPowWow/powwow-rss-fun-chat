@@ -1,8 +1,8 @@
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
+import * as T from 'io-ts';
+import { NonEmptyString } from 'io-ts-types';
 
-import type { UserData } from '@/models/UserData.ts';
-import { UserDataSchema, UserNameSchema } from '@/models/UserData.ts';
 import {
   getLocalStorageItem,
   getSessionStorageItem,
@@ -12,18 +12,17 @@ import {
   toOneError,
 } from '@/packages/fp-ts-utils';
 
+export const UserNameSchema = T.type({
+  username: NonEmptyString,
+});
+export const UserPasswordSchema = T.type({
+  password: NonEmptyString,
+});
+export const UserDataSchema = T.intersection([UserNameSchema, UserPasswordSchema]);
 export const STORAGE_KEY = 'fun-chat';
-export type SuccessAuthorized = { authorized: true } & UserData;
+export type UserData = T.TypeOf<typeof UserDataSchema>;
 
-export const validateUserInput = (input: unknown): E.Either<Error, SuccessAuthorized> =>
-  pipe(
-    input,
-    UserDataSchema.decode,
-    E.mapLeft(toOneError),
-    E.map((userData): SuccessAuthorized => ({ ...userData, authorized: true })),
-  );
-
-export const credentials = {
+export const webStorageCredentials = {
   storeUserData: (userData: { username: string; password: string }): E.Either<Error, void> => {
     return pipe(
       userData,
@@ -47,13 +46,12 @@ export const credentials = {
       E.mapLeft(toOneError),
       E.map((userData) => userData.username),
     ),
-  getStoredUserData: (): E.Either<Error, SuccessAuthorized> =>
+  getStoredUserData: (): E.Either<Error, UserData> =>
     pipe(
       STORAGE_KEY,
       getSessionStorageItem,
       E.flatMap(jsonParse),
       E.flatMap(UserDataSchema.decode),
       E.mapLeft(toOneError),
-      E.map((userData): SuccessAuthorized => ({ ...userData, authorized: true })),
     ),
 };

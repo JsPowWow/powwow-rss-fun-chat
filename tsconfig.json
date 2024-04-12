@@ -144,6 +144,9 @@
       ],
       "@/models/*": [
         "./app/models/*"
+      ],
+      "@/appConfig/*": [
+        "./app/appConfig/*"
       ]
     }
   },

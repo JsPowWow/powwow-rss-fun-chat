@@ -1,7 +1,7 @@
 import { assertIsLeft, assertIsRight } from '@/packages/fp-ts-utils';
 import { expect } from 'vitest';
 
-import { credentials } from './credentialsService.ts';
+import { webStorageCredentials as credentials } from './webStorageCredentialsService.ts';
 
 describe('session storage "credentials.getStoredUserData" tests', () => {
   test('should handle storage get-item RTE', () => {
@@ -49,7 +49,6 @@ describe('session storage "credentials.getStoredUserData" tests', () => {
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => '{"username":"test","password":"test-password"}');
     const e = credentials.getStoredUserData();
     assertIsRight(e);
-    expect(e.right.authorized).toBe(true);
     expect(e.right.username).toBe('test');
     expect(e.right.password).toBe('test-password');
   });

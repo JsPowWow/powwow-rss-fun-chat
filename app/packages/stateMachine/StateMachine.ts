@@ -44,7 +44,7 @@ export class StateMachine<State, Action = State>
     return this.currentState === state;
   }
 
-  public setState(next: Action): typeof this {
+  public setState(next: Action): State {
     const prevState = this.currentState;
     try {
       const nextState = this.definition.getNextState(this.currentState, next);
@@ -57,7 +57,7 @@ export class StateMachine<State, Action = State>
         `${this.name}:setState(.. Error occurred on (${String(prevState)} -> ${String(next)})`,
         setStateError,
       );
-      return this;
+      return this.currentState;
     }
 
     try {
@@ -73,6 +73,6 @@ export class StateMachine<State, Action = State>
         error,
       );
     }
-    return this;
+    return this.currentState;
   }
 }

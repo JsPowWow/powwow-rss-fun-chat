@@ -1,6 +1,6 @@
 import { P, match } from 'ts-pattern';
 
-import type { UserData } from '@/models/UserData.ts';
+import type { IUserData } from '@/appConfig/types.ts';
 import type { AppNoCredsRequiredPath } from '@/pages/routing';
 import { AppPath } from '@/pages/routing';
 import type { IState, IStateMachineDefinition } from '@/state-machine';
@@ -11,13 +11,13 @@ import { noop } from '@/utils';
 export type AppState =
   | IState<undefined, typeof AppPath.root>
   | IState<undefined, typeof AppPath.login>
-  | IState<UserData, typeof AppPath.chat>
+  | IState<IUserData, typeof AppPath.chat>
   | IState<undefined, typeof AppPath.about>;
 
 export type AppStateChangeAction =
   | { action: 'gotoNoCredsPage'; payload: AppNoCredsRequiredPath }
   | { action: 'login'; payload: undefined }
-  | { action: 'authorized'; payload: UserData };
+  | { action: 'authorized'; payload: IUserData };
 
 export const AppStateDefinition: IStateMachineDefinition<AppState, AppStateChangeAction> = {
   initialState: new State(AppPath.root, undefined),

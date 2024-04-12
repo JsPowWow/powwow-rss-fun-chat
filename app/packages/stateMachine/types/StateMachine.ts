@@ -23,4 +23,5 @@ export type StateMachineEventListener<Type, State, Action> = (event: StateMachin
 export interface IStateMachine<State, Action = State> extends IEventEmitter<StateMachineEventsMap<State, Action>> {
   get state(): State;
   isInState(state: State): state is State;
+  setState(next: Action): State;
 }

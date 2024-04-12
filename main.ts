@@ -1,19 +1,9 @@
 import './normalize.css';
 import './style.css';
-
-import { AppPageStateController } from '@/pages';
-import { assertIsInstanceOf, getLogger } from '@/utils';
-
-import { debug } from './app/debug.ts';
-
-const app = document.querySelector('#app');
-assertIsInstanceOf(HTMLElement, app);
+import { debug } from '@/appConfig/debug';
+import { Registry } from '@/appConfig/registry';
 
 window.addEventListener('load', () => {
-  new AppPageStateController(app, {
-    debug: true,
-    logger: getLogger('AppPagesController'),
-  }).initialize();
+  new Registry().initialize();
+  debug.initialize();
 });
-
-debug.initialize();
