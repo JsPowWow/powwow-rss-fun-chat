@@ -1,5 +1,5 @@
 import * as E from 'fp-ts/Either';
-import { flow, pipe } from 'fp-ts/function';
+import { pipe } from 'fp-ts/function';
 import { match } from 'ts-pattern';
 
 import type {
@@ -7,11 +7,13 @@ import type {
   IAppPageManager,
   IAppRouteStateClient,
   IAppRouteStateController,
+  IUserData,
 } from '@/appConfig/types.ts';
 import { Component } from '@/components';
 import { ChatModel } from '@/models/ChatModel.ts';
 import { AboutPage } from '@/pages/about';
 import { ChatPage } from '@/pages/chat';
+import type { LoginOnSubmitCallback } from '@/pages/login';
 import { LoginPage } from '@/pages/login';
 import type { AppPagePath } from '@/pages/routing';
 import { AppPath } from '@/pages/routing';
@@ -73,13 +75,7 @@ export class AppPageManager extends Loggable implements IAppPageManager {
         pipe(
           {
             userName: pipe(this.credentialsService.getUserName(), E.match(noop, identity)),
-            onSubmit: flow(
-              this.credentialsService.validate,
-              E.foldW(identity, (userData) => {
-                this.routeStateController.dispatch(new Action('authorized', userData));
-                return undefined;
-              }),
-            ),
+            onSubmit: this.handleLoginSubmit,
           },
           LoginPage.create,
           doLog(path),
@@ -88,4 +84,14 @@ export class AppPageManager extends Loggable implements IAppPageManager {
       )
       .run();
   };
+
+  private handleLoginSubmit = (userData: IUserData): ReturnType<LoginOnSubmitCallback> =>
+    pipe(
+      userData,
+      this.credentialsService.validate,
+      E.foldW(identity, (data) => {
+        this.routeStateController.dispatch(new Action('authorized', data));
+        return undefined;
+      }),
+    );
 }

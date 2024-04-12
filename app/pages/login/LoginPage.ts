@@ -1,14 +1,13 @@
+import type { IUserData } from '@/appConfig/types.ts';
 import { Component } from '@/components';
 import type { Nullable } from '@/utils';
+import { isSome } from '@/utils';
 
 import classes from './LoginPage.module.css';
 
 export type OnSubmitErrors = Nullable<Partial<Record<'username' | 'userpwd', string>> | Error>;
 
-export type LoginOnSubmitCallback = (userData: {
-  username: FormDataEntryValue | null;
-  password: FormDataEntryValue | null;
-}) => OnSubmitErrors;
+export type LoginOnSubmitCallback = (userData: IUserData) => OnSubmitErrors;
 
 export type LoginPageProps = {
   onSubmit?: LoginOnSubmitCallback;
@@ -35,11 +34,14 @@ export class LoginPage extends Component<'div'> {
   private handleFormSubmit = (e: SubmitEvent): void => {
     e.preventDefault();
     const formData = new FormData(this.form.element, e.submitter);
-
-    this.props?.onSubmit?.({
-      username: formData.get('username') ?? '',
-      password: formData.get('userpwd') ?? '',
-    });
+    const username = formData.get('username') ?? '';
+    const password = formData.get('userpwd') ?? '';
+    if (isSome<string>(username) && isSome<string>(password)) {
+      this.props?.onSubmit?.({
+        username,
+        password,
+      });
+    }
   };
 
   private createForm(): Component<'form'> {
