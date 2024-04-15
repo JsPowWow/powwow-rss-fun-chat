@@ -16,11 +16,18 @@ export function assertIsRight<E>(e: E.Either<E, unknown>): asserts e is E.Right<
   }
 }
 
-export const jsonParse = (text: string): E.Either<Error, unknown> =>
-  E.tryCatch((): unknown => JSON.parse(text), E.toError);
+export const withCause = (err: Error) => (c: unknown) => {
+  err.cause = c;
+  return err;
+};
 
-export const jsonStringify = (value: unknown): E.Either<Error, string> =>
-  E.tryCatch((): string => JSON.stringify(value), E.toError);
+export class JSONParseError extends Error {}
+export const jsonParse = (text: string): E.Either<JSONParseError, unknown> =>
+  E.tryCatch((): unknown => JSON.parse(text), withCause(new JSONParseError()));
+
+export class JSONStringifyError extends Error {}
+export const jsonStringify = (value: unknown): E.Either<JSONStringifyError, string> =>
+  E.tryCatch((): string => JSON.stringify(value), withCause(new JSONStringifyError()));
 
 export const getItemByKey =
   (storage: Storage) =>
