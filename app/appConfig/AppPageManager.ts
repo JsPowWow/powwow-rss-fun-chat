@@ -10,7 +10,7 @@ import type {
   IUserData,
 } from '@/appConfig/types.ts';
 import { Component } from '@/components';
-import { ChatModel } from '@/models/ChatModel.ts';
+import type { ChatModel } from '@/models/ChatModel.ts';
 import { AboutPage } from '@/pages/about';
 import { ChatPage } from '@/pages/chat';
 import type { LoginOnSubmitCallback } from '@/pages/login';
@@ -19,8 +19,6 @@ import type { AppPagePath } from '@/pages/routing';
 import { AppPath } from '@/pages/routing';
 import { Action } from '@/state-machine';
 import { Loggable, type WithDebugOptions, identity, noop } from '@/utils';
-
-const chatUrl = import.meta.env.VITE_MIK_API_URL;
 
 export class AppPageManager extends Loggable implements IAppPageManager {
   private readonly root: HTMLElement;
@@ -31,7 +29,7 @@ export class AppPageManager extends Loggable implements IAppPageManager {
 
   private readonly credentialsService: IAppCredentialsService;
 
-  private chatModel?: ChatModel;
+  private chatModel: ChatModel;
 
   constructor(
     options: WithDebugOptions<{
@@ -39,6 +37,7 @@ export class AppPageManager extends Loggable implements IAppPageManager {
       routeStateClient: IAppRouteStateClient;
       routeStateController: IAppRouteStateController;
       credentialsService: IAppCredentialsService;
+      chatModel: ChatModel;
     }>,
   ) {
     super(options);
@@ -46,16 +45,13 @@ export class AppPageManager extends Loggable implements IAppPageManager {
     this.routeStateController = options.routeStateController;
     this.routeStateClient = options.routeStateClient;
     this.credentialsService = options.credentialsService;
+    this.chatModel = options.chatModel;
   }
 
   public initialize(): typeof this {
     this.registerStateChangeUpdates();
     return this;
   }
-
-  private getChatModel = (): ChatModel => {
-    return this.chatModel ? this.chatModel : new ChatModel(chatUrl);
-  };
 
   private registerStateChangeUpdates = (): void => {
     this.mountPage(this.routeStateClient.state.state);
@@ -69,7 +65,7 @@ export class AppPageManager extends Loggable implements IAppPageManager {
     const doLog = (path: string): (<A>(a: A) => A) => this.log(`mountPage: ${path}`, 'info');
     const attachPage = Component.appendChild(this.root);
     match(pathname)
-      .with(AppPath.chat, (path) => pipe(this.getChatModel(), ChatPage.create, doLog(path), attachPage))
+      .with(AppPath.chat, (path) => pipe(this.chatModel, ChatPage.create, doLog(path), attachPage))
       .with(AppPath.about, (path) => pipe(undefined, AboutPage.create, doLog(path), attachPage))
       .with(AppPath.login, (path) =>
         pipe(
@@ -89,9 +85,11 @@ export class AppPageManager extends Loggable implements IAppPageManager {
     pipe(
       userData,
       this.credentialsService.validate,
-      E.foldW(identity, (data) => {
-        this.routeStateController.dispatch(new Action('authorized', data));
-        return undefined;
-      }),
+      E.foldW(
+        (e) => ({ username: e }),
+        (data) => {
+          return this.routeStateController.dispatch(new Action('authorized', data));
+        },
+      ),
     );
 }

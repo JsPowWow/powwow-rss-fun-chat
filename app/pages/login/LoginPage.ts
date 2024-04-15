@@ -1,13 +1,10 @@
 import type { IUserData } from '@/appConfig/types.ts';
 import { Component } from '@/components';
-import type { Nullable } from '@/utils';
 import { isSome } from '@/utils';
 
 import classes from './LoginPage.module.css';
 
-export type OnSubmitErrors = Nullable<Partial<Record<'username' | 'userpwd', string>> | Error>;
-
-export type LoginOnSubmitCallback = (userData: IUserData) => OnSubmitErrors;
+export type LoginOnSubmitCallback = (userData: IUserData) => void | Partial<Record<'username' | 'userpwd', Error>>;
 
 export type LoginPageProps = {
   onSubmit?: LoginOnSubmitCallback;
