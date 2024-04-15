@@ -1,5 +1,7 @@
+import { CredentialsController } from '@/appConfig/CredentialsController.ts';
 import { CredentialsService } from '@/appConfig/CredentialsService.ts';
 import type {
+  IAppCredentialsController,
   IAppCredentialsService,
   IAppPageManager,
   IAppRouteStateClient,
@@ -26,6 +28,8 @@ export class Registry {
   public static AppPageManager: { name: 'AppPageManager'; instance: IAppPageManager };
 
   public static CredentialsService: { name: 'CredentialsService'; instance: IAppCredentialsService };
+
+  public static CredentialsController: { name: 'CredentialsController'; instance: IAppCredentialsController };
 
   public static SocketService: { name: 'SocketService' };
 
@@ -56,6 +60,16 @@ export class Registry {
         debug: true,
         logger: getLogger('CredentialsService'),
       }),
+    };
+
+    this.CredentialsController = {
+      name: 'CredentialsController',
+      instance: new CredentialsController({
+        credentialsService: this.CredentialsService.instance,
+        routeStateClient: this.AppStateClient.instance,
+        debug: true,
+        logger: getLogger('CredentialsController'),
+      }).initialize(),
     };
 
     this.AppRouteStateController = {

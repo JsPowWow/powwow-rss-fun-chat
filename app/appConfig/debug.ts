@@ -12,5 +12,6 @@ export const debug = {
     getLogger(Registry.AppState.name).setEnabled(true);
     getLogger(Registry.AppStateClient.name).setEnabled(true);
     getLogger(Registry.CredentialsService.name).setEnabled(true);
+    getLogger(Registry.CredentialsController.name).setEnabled(true);
   },
 };

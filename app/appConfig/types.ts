@@ -30,3 +30,7 @@ export interface IAppCredentialsService {
   saveUserName: (username: string) => E.Either<Error, void>;
   getUserName: () => E.Either<Error, string>;
 }
+
+export interface IAppCredentialsController {
+  initialize: () => IAppCredentialsController;
+}

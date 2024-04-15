@@ -67,13 +67,6 @@ export class AppRouteStateController extends Loggable implements IAppRouteStateC
     this.routeStateClient.onStateEnter('any', (e) => {
       pushHistoryState(e.to.state);
     });
-    this.routeStateClient.onStateLeave('/login', (e) => {
-      if (e.by.action === 'authorized' && e.to.state === '/chat') {
-        const userData = e.to.data;
-        this.credentialsService.saveUserName(userData.username);
-        this.credentialsService.saveUserData(userData);
-      }
-    });
   };
 
   private registerBrowserBackAndForth = (): void => {
