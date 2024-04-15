@@ -13,7 +13,7 @@ import { getAppPageSafePath, pushHistoryState } from '@/pages/routing';
 import { Action } from '@/state-machine';
 import type { WithDebugOptions } from '@/utils';
 
-import type { AppRouteState, RouteStateChangeAction } from './AppRouteStateDefinitions.ts';
+import type { RouteStateChangeAction } from './AppRouteStateDefinitions.ts';
 
 export class AppRouteStateController extends Loggable implements IAppRouteStateController {
   public readonly routeStateClient: IAppRouteStateClient;
@@ -44,8 +44,8 @@ export class AppRouteStateController extends Loggable implements IAppRouteStateC
     return this;
   }
 
-  public dispatch = (action: RouteStateChangeAction): AppRouteState => {
-    return this.routeState.setState(action);
+  public dispatch = (action: RouteStateChangeAction): void => {
+    this.routeState.setState(action);
   };
 
   private validateCurrentUrlPathName = (): void => {
