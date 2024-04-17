@@ -1,3 +1,9 @@
 .chat-page {
     display: flex;
+    width: 100%;
+}
+
+.terminal-wrapper {
+    width: 100%;
+    /*overflow: hidden;*/
 }

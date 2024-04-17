@@ -88,5 +88,5 @@ export const socketService = {
     logger = serviceLogger;
     return logger;
   },
-  getWebSocket: (url: string): PendingWebSocket => pipe(url, getWebSocket, (e) => e()),
+  getWebSocket: (url: string): PendingWebSocket => getWebSocket(url)(),
 };

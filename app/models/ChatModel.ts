@@ -1,36 +1,6 @@
-import * as E from 'fp-ts/Either';
-import { pipe } from 'fp-ts/function';
+import type { UserLoginMessage } from '@/api/chatSocketLoginApi.ts';
+import { EventEmitter } from '@/event-emitter';
 
-import { socketService } from '@/packages/fp-ts-utils/socketService.ts';
-import type { DebugOption } from '@/utils';
-import { Loggable } from '@/utils';
+export type ChatModelEventMap = { onLogin: UserLoginMessage };
 
-export class ChatModel extends Loggable {
-  private readonly url: string;
-
-  private socket?: WebSocket;
-
-  constructor(url: string, options?: DebugOption) {
-    super(options);
-    this.url = url;
-  }
-
-  public initialize = async (): Promise<void> => {
-    this.logger?.info('initializing...');
-    pipe(
-      await socketService.getWebSocket(this.url),
-      E.map(this.log('got webSocket')),
-      E.fold(this.log('no webSocket', 'warn'), this.setWebSocket),
-    );
-  };
-
-  private setWebSocket = (socket: WebSocket): void => {
-    if (this.socket) {
-      // TODO AR remove listeners
-    }
-    this.socket = socket;
-    if (this.socket) {
-      // TODO AR add listeners
-    }
-  };
-}
+export class ChatModel extends EventEmitter<ChatModelEventMap> {}

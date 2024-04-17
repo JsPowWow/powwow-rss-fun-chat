@@ -4,6 +4,9 @@ import type { Errors } from 'io-ts';
 import { failure } from 'io-ts/PathReporter';
 import { NonEmptyString } from 'io-ts-types';
 
+import { JSONParseError } from '@/packages/fp-ts-utils/errors/JSONParseError.ts';
+import { JSONStringifyError } from '@/packages/fp-ts-utils/errors/JSONStringifyError.ts';
+
 export function assertIsLeft<E>(e: E.Either<E, unknown>): asserts e is E.Left<E> {
   if (!E.isLeft(e)) {
     throw Error('should be Either.Left');
@@ -16,16 +19,16 @@ export function assertIsRight<E>(e: E.Either<E, unknown>): asserts e is E.Right<
   }
 }
 
-export const withCause = (err: Error) => (c: unknown) => {
-  err.cause = c;
-  return err;
-};
+export const withCause =
+  <E extends Error>(err: E) =>
+  (c: unknown): E => {
+    err.cause = c;
+    return err;
+  };
 
-export class JSONParseError extends Error {}
 export const jsonParse = (text: string): E.Either<JSONParseError, unknown> =>
   E.tryCatch((): unknown => JSON.parse(text), withCause(new JSONParseError()));
 
-export class JSONStringifyError extends Error {}
 export const jsonStringify = (value: unknown): E.Either<JSONStringifyError, string> =>
   E.tryCatch((): string => JSON.stringify(value), withCause(new JSONStringifyError()));
 

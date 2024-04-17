@@ -5,3 +5,4 @@ export * from './CanvasComponent';
 export * from './Overlay';
 export * from './IFrameComponent';
 export * from './neonText/NeonText.ts';
+export * from './simpleShell';

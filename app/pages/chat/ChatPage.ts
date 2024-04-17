@@ -1,6 +1,5 @@
-import { Component } from '@/components';
+import { Component, SimpleShell } from '@/components';
 import type { ChatModel } from '@/models/ChatModel.ts';
-import { getLogger, noop } from '@/utils';
 
 import classes from './ChatPage.module.css';
 
@@ -11,17 +10,19 @@ export class ChatPage extends Component<'div'> {
 
   private readonly chatModel: ChatModel;
 
+  private readonly messages: SimpleShell;
+
   private constructor(chat: ChatModel) {
     super('div', { id: ChatPage.ID });
     this.chatModel = chat;
     this.toggleClass(classes.chatPage);
-    this.setTextContent('Chat Page');
+    this.messages = this.appendChild(new SimpleShell());
     this.initialize();
   }
 
   public initialize(): typeof this {
-    this.chatModel.setLogger(getLogger('ChatModel'));
-    this.chatModel.initialize().catch(noop);
+    // TODO add listeners
+
     return this;
   }
 }

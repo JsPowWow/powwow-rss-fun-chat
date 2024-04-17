@@ -98,3 +98,11 @@ export const randomInt = (min: number, max: number): number => {
 export function clamp01(input: number): number {
   return Math.min(Math.max(input, 0), 1);
 }
+
+export function sleep(delay: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, delay);
+  });
+}

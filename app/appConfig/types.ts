@@ -20,7 +20,7 @@ export interface IAppPageManager {
 
 export interface IAppRouteStateController {
   initialize: () => IAppRouteStateController;
-  dispatch: (action: RouteStateChangeAction) => AppRouteState;
+  dispatch: (action: RouteStateChangeAction) => void;
 }
 
 export interface IAppCredentialsService {
@@ -33,4 +33,8 @@ export interface IAppCredentialsService {
 
 export interface IAppCredentialsController {
   initialize: () => IAppCredentialsController;
+}
+
+export interface IChatController {
+  initialize: () => IChatController;
 }

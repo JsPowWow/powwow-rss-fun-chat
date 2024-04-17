@@ -1,3 +1,4 @@
+import { ChatController } from '@/appConfig/ChatController.ts';
 import { CredentialsController } from '@/appConfig/CredentialsController.ts';
 import { CredentialsService } from '@/appConfig/CredentialsService.ts';
 import type {
@@ -7,7 +8,9 @@ import type {
   IAppRouteStateClient,
   IAppRouteStateController,
   IAppRouteStateMachine,
+  IChatController,
 } from '@/appConfig/types.ts';
+import { ChatModel } from '@/models/ChatModel.ts';
 import { StateMachine, StateMachineClient } from '@/state-machine';
 import { getLogger } from '@/utils';
 
@@ -33,7 +36,9 @@ export class Registry {
 
   public static SocketService: { name: 'SocketService' };
 
-  public static ChatModel: { name: 'ChatModel' };
+  public static ChatModel: { name: 'ChatModel'; instance: ChatModel };
+
+  public static ChatController: { name: 'ChatController'; instance: IChatController };
 
   static {
     this.AppState = {
@@ -83,6 +88,11 @@ export class Registry {
       }).initialize(),
     };
 
+    this.ChatModel = {
+      name: 'ChatModel',
+      instance: new ChatModel(),
+    };
+
     this.AppPageManager = {
       name: 'AppPageManager',
       instance: new AppPageManager({
@@ -90,17 +100,24 @@ export class Registry {
         routeStateClient: this.AppStateClient.instance,
         routeStateController: this.AppRouteStateController.instance,
         credentialsService: this.CredentialsService.instance,
+        chatModel: this.ChatModel.instance,
         debug: true,
         logger: getLogger('AppPageManager'),
       }).initialize(),
     };
 
-    this.SocketService = {
-      name: 'SocketService',
+    this.ChatController = {
+      name: 'ChatController',
+      instance: new ChatController({
+        chatModel: this.ChatModel.instance,
+        routeStateClient: this.AppStateClient.instance,
+        debug: true,
+        logger: getLogger('ChatController'),
+      }).initialize(),
     };
 
-    this.ChatModel = {
-      name: 'ChatModel',
+    this.SocketService = {
+      name: 'SocketService',
     };
   }
 

@@ -16,14 +16,17 @@
     "validate": "npm run type-check && npm run lint:fix && npm run test"
   },
   "dependencies": {
+    "@xterm/addon-fit": "^0.10.0",
+    "ansi-escape-sequences": "^6.2.2",
     "fp-ts": "^2.16.5",
     "happy-dom": "^14.7.1",
     "io-ts": "^2.2.21",
     "io-ts-types": "^0.5.19",
     "ts-pattern": "^5.0.8",
-    "valibot": "^0.30.0"
+    "xterm": "^5.3.0"
   },
   "devDependencies": {
+    "@types/ansi-escape-sequences": "^4.0.4",
     "@types/node": "^20.11.30",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
     "@typescript-eslint/parser": "^7.3.1",

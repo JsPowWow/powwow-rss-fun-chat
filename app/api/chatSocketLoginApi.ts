@@ -20,7 +20,7 @@ const UserLoginMsgSchema = T.type({
   }),
 });
 
-type UserLoginMessage = T.TypeOf<typeof UserLoginMsgSchema>;
+export type UserLoginMessage = T.TypeOf<typeof UserLoginMsgSchema>;
 
 export const login = (userData: IUserData, ws: WebSocket): TE.TaskEither<Error, UserLoginMessage> => {
   return () =>
@@ -29,12 +29,11 @@ export const login = (userData: IUserData, ws: WebSocket): TE.TaskEither<Error, 
       ws.addEventListener(
         'error',
         (e) => {
-          console.log('rejection', e);
           reject(e);
         },
         { once: true },
       );
-      const handleOnMessage = (e: MessageEvent<unknown>) => {
+      const handleOnMessage = (e: MessageEvent<unknown>): void => {
         pipe(
           e.data,
           E.fromPredicate(isString, UnknownDataFormatError.create('String data format expected')),
@@ -43,17 +42,14 @@ export const login = (userData: IUserData, ws: WebSocket): TE.TaskEither<Error, 
           // E.mapLeft(toOneError),
           E.fold(
             (error) => {
-              console.log('error', e);
               if (isInstanceOf(UnknownDataFormatError, error)) {
-                console.log('reject', e);
                 ws.removeEventListener('message', handleOnMessage);
                 reject(E.left(error));
               }
             },
-            (e) => {
-              console.log('commit', e);
+            (r) => {
               ws.removeEventListener('message', handleOnMessage);
-              resolve(E.right(e));
+              resolve(E.right(r));
             },
           ),
         );
