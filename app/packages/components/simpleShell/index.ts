@@ -1,1 +1,1 @@
-export { SimpleShell } from './SimpleShell.ts';
+export { SimpleShellComponent } from './SimpleShellComponent.ts';

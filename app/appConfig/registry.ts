@@ -47,7 +47,7 @@ export class Registry {
         name: 'AppState',
         definition: AppRouteStateDefinitions,
         debug: true,
-        logger: getLogger('AppState'),
+        logger: getLogger('AppState').setEnabled(true),
       }),
     };
 
@@ -55,7 +55,7 @@ export class Registry {
       name: 'AppStateClient',
       instance: new StateMachineClient(this.AppState.instance, {
         debug: true,
-        logger: getLogger('AppStateClient'),
+        logger: getLogger('AppStateClient').setEnabled(true),
       }),
     };
 
@@ -63,7 +63,7 @@ export class Registry {
       name: 'CredentialsService',
       instance: new CredentialsService({
         debug: true,
-        logger: getLogger('CredentialsService'),
+        logger: getLogger('CredentialsService').setEnabled(true),
       }),
     };
 
@@ -73,7 +73,7 @@ export class Registry {
         credentialsService: this.CredentialsService.instance,
         routeStateClient: this.AppStateClient.instance,
         debug: true,
-        logger: getLogger('CredentialsController'),
+        logger: getLogger('CredentialsController').setEnabled(true),
       }).initialize(),
     };
 
@@ -84,7 +84,7 @@ export class Registry {
         routeStateClient: this.AppStateClient.instance,
         credentialsService: this.CredentialsService.instance,
         debug: true,
-        logger: getLogger('AppRouteStateController'),
+        logger: getLogger('AppRouteStateController').setEnabled(true),
       }).initialize(),
     };
 
@@ -102,7 +102,7 @@ export class Registry {
         credentialsService: this.CredentialsService.instance,
         chatModel: this.ChatModel.instance,
         debug: true,
-        logger: getLogger('AppPageManager'),
+        logger: getLogger('AppPageManager').setEnabled(true),
       }).initialize(),
     };
 
@@ -112,7 +112,7 @@ export class Registry {
         chatModel: this.ChatModel.instance,
         routeStateClient: this.AppStateClient.instance,
         debug: true,
-        logger: getLogger('ChatController'),
+        logger: getLogger('ChatController').setEnabled(true),
       }).initialize(),
     };
 

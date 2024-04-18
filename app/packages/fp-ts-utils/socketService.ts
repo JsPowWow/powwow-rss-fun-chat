@@ -47,21 +47,25 @@ const storePendingWebSocket = (url: string) => {
 
 const createWebSocket = (url: string): TE.TaskEither<ConnectionError, WebSocket> => {
   const promise: PendingWebSocket = new Promise((resolve, reject) => {
-    const ws = new WebSocket(url);
+    try {
+      const ws = new WebSocket(url);
+      ws.addEventListener('open', (_e) => {
+        logger?.info('Connected', url);
 
-    ws.addEventListener('open', (_e) => {
-      logger?.info('Connected', url);
-      resolve(E.right(ws));
-    });
-    ws.addEventListener('error', (e) => {
-      logger?.warn('Connection error', url, e);
-      reject(
-        E.left({
-          type: 'The server responded with a connection error',
-          timestamp: performance.now(),
-        }),
-      );
-    });
+        resolve(E.right(ws));
+      });
+      ws.addEventListener('error', (e) => {
+        logger?.warn('Connection error', url, e);
+        reject(
+          E.left({
+            type: 'The server responded with a connection error',
+            timestamp: performance.now(),
+          }),
+        );
+      });
+    } catch (error) {
+      reject(E.left(error));
+    }
     // TODO AR clear cache on close, error
   });
   logger?.info('createWebSocket', url);
@@ -72,14 +76,14 @@ const createWebSocket = (url: string): TE.TaskEither<ConnectionError, WebSocket>
 const getWebSocket = (url: string): TE.TaskEither<ConnectionError, WebSocket> => {
   return pipe(
     Task.fromIO(getStoredWebSocket(url)),
-    Task.chain((ws) =>
-      O.isSome(ws)
+    Task.chain((ws) => {
+      return O.isSome(ws)
         ? constant(ws.value)
         : pipe(
             createWebSocket(url),
             Task.chain((newWS) => TE.fromIOEither(storeNewWebSocket(url, newWS))),
-          ),
-    ),
+          );
+    }),
   );
 };
 

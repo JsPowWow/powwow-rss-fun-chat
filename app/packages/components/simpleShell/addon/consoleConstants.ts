@@ -30,3 +30,11 @@ export const BGblue = '\x1b[44m';
 export const BGmagenta = '\x1b[45m';
 export const BGcyan = '\x1b[46m';
 export const BGwhite = '\x1b[47m';
+
+export const KEY_UP = '\x1b[A';
+export const KEY_DOWN = '\x1b[B';
+export const KEY_RIGHT = '\x1b[C';
+export const KEY_LEFT = '\x1b[D';
+export const ARROW_KEYS = Object.freeze([KEY_UP, KEY_DOWN, KEY_RIGHT, KEY_LEFT]);
+export const KEY_BACKSPACE = '\x7F';
+export const ENTER_KEY = '\r';
