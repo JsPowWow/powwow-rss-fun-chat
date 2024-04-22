@@ -1,4 +1,4 @@
-import type { IEventEmitter } from '@/event-emitter';
+import type { IEventEmitter } from '@powwow-js/emitter';
 
 export type StateMachineEvent<Type, State, Action> = {
   type: Type;

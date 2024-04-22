@@ -1,4 +1,4 @@
-import type { IEventEmitter } from '@/event-emitter';
+import type { IEventEmitter } from '@powwow-js/emitter';
 
 import type { StateMachineEvent, StateMachineEventListener } from './StateMachine.ts';
 import type { AnyState, IState } from '../state/State.ts';

@@ -121,9 +121,6 @@
       "@/state-machine": [
         "./app/packages/stateMachine/index.ts"
       ],
-      "@/event-emitter": [
-        "./app/packages/eventEmitter/index.ts"
-      ],
       "@/pages": [
         "./app/pages"
       ],

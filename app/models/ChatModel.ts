@@ -1,5 +1,6 @@
+import { EventEmitter } from '@powwow-js/emitter';
+
 import type { UserLoginMessage, UsersListMessage } from '@/api/chatSocketApi.ts';
-import { EventEmitter } from '@/event-emitter';
 import type { Nullable } from '@/utils';
 
 export type ChatModelEventMap = { onLogin: UserLoginMessage; onUsersList: UsersListMessage };

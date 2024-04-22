@@ -1,6 +1,7 @@
+import { EventEmitter } from '@powwow-js/emitter';
+import type { EventListenerCallback, EventMapKey, IEventEmitter } from '@powwow-js/emitter';
+
 import { Component, type ComponentCreateOptions } from '@/components';
-import type { EventKey, EventListener, IEventEmitter } from '@/event-emitter';
-import { EventEmitter } from '@/event-emitter';
 
 import classes from './RedSwitch.module.css';
 
@@ -47,20 +48,23 @@ export class RedSwitch extends Component<'label'> implements IEventEmitter<RedSw
     return this;
   };
 
-  public emit<Event extends EventKey<RedSwitchEventsMap>>(eventName: Event, params: RedSwitchEventsMap[Event]): void {
+  public emit<Event extends EventMapKey<RedSwitchEventsMap>>(
+    eventName: Event,
+    params: RedSwitchEventsMap[Event],
+  ): void {
     return this.emitter.emit(eventName, params);
   }
 
-  public off<Event extends EventKey<RedSwitchEventsMap>>(
+  public off<Event extends EventMapKey<RedSwitchEventsMap>>(
     eventName: Event,
-    fn: EventListener<RedSwitchEventsMap[Event]>,
+    fn: EventListenerCallback<RedSwitchEventsMap[Event]>,
   ): void {
     return this.emitter.off(eventName, fn);
   }
 
-  public on<Event extends EventKey<RedSwitchEventsMap>>(
+  public on<Event extends EventMapKey<RedSwitchEventsMap>>(
     eventName: Event,
-    fn: EventListener<RedSwitchEventsMap[Event]>,
+    fn: EventListenerCallback<RedSwitchEventsMap[Event]>,
   ): void {
     return this.emitter.on(eventName, fn);
   }

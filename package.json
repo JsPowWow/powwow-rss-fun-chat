@@ -16,6 +16,8 @@
     "validate": "npm run type-check && npm run lint:fix && npm run test"
   },
   "dependencies": {
+    "@powwow-js/emitter": "^0.0.2",
+    "@powwow-js/nullable": "^0.0.1",
     "@xterm/addon-fit": "^0.10.0",
     "ansi-escape-sequences": "^6.2.2",
     "fp-ts": "^2.16.5",

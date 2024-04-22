@@ -1,4 +1,5 @@
-import { EventEmitter } from '@/event-emitter';
+import { EventEmitter } from '@powwow-js/emitter';
+
 import type { ILogger, WithDebugOptions } from '@/utils';
 
 import type { AnyState, IState } from './state/State.ts';
